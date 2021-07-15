@@ -1,0 +1,22 @@
+{
+    "name": "G-Loot Helper",
+    "description": "Adds additional features to G-Loot.",
+    "version": "1.0",
+    "manifest_version": 3,
+    "permissions": [
+        "storage",
+        "activeTab"
+    ],
+    "host_permissions": [
+        "*://play.gloot.com/*"
+    ],
+    "content_scripts": [
+        {
+            "matches": [
+                "*://play.gloot.com/*"
+            ],
+            "js": ["content.js"],
+            "run_at": "document_end"
+        }
+    ]
+}
