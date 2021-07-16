@@ -15,7 +15,14 @@ const observerCallback = async (mutationsList) => {
         if (currentBalance.startsWith("£")) {
             toCurrency = "GBP";
             amount = Number(currentBalance.replace("£", ""));
+        } else if (currentBalance.endsWith("kr")) {
+            toCurrency = "SEK";
+            amount = Number(currentBalance.replace("kr", ""));
+        } else if (currentBalance.startsWith("€")) {
+            toCurrency = "EUR";
+            amount = Number(currentBalance.replace("€", ""));
         }
+
         if (!toCurrency) return; // incompatible currency?
 
         const userToken = localStorage.getItem("token");
