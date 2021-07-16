@@ -1,5 +1,7 @@
 const targetNode = document.getElementById("wallet-item");
 
+let lastCurrencyConversion = {};
+
 const observerCallback = async (mutationsList) => {
     for (const mutation of mutationsList) {
         let currentBalance;
@@ -25,19 +27,27 @@ const observerCallback = async (mutationsList) => {
 
         if (!toCurrency) return; // incompatible currency?
 
-        const userToken = localStorage.getItem("token");
-        if (!userToken) return; // NOT LOGGED IN
+        let result;
+        if (amount === lastCurrencyConversion.amount && toCurrency === lastCurrencyConversion.toCurrency) {
+            result = {amount: lastCurrencyConversion.USD};
+        } else {
+            const userToken = localStorage.getItem("token");
+            if (!userToken) return; // NOT LOGGED IN
 
-        let result = await fetch(`https://edge.gnog.prod.gloot.com/gnog-nest/currency/conversion/USD?amount=${amount.toString()}&currency=${toCurrency}`,
-            {
-                method: "get",
-                headers: {
-                    "Authorization": `Bearer ${userToken}`,
-                    "Host": "edge.gnog.prod.gloot.com"
+            result = await fetch(`https://edge.gnog.prod.gloot.com/gnog-nest/currency/conversion/USD?amount=${amount.toString()}&currency=${toCurrency}`,
+                {
+                    method: "get",
+                    headers: {
+                        "Authorization": `Bearer ${userToken}`,
+                        "Host": "edge.gnog.prod.gloot.com"
+                    }
                 }
-            }
-        );
-        result = await result.json();
+            );
+            result = await result.json();
+
+            // save for next conversion
+            lastCurrencyConversion = {amount, toCurrency, USD:result.amount};
+        }
         document.getElementById("wallet-item").innerHTML = `${currentBalance} ($${result.amount})`;
     }
 };
